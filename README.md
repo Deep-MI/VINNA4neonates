@@ -10,9 +10,6 @@ Bash scripts for running inference and training
 - Interactive_Plotting: Concatenation of single evaluation measures, enrichment with meta-info, and plotting of simple barplots
 - Pooling-illustrations: Code for generation of pooling illustration for the paper
 - Seaborn_plottting: Code for generation of final figures for paper
-- SuperResTest:
-- Inference_Test:
-- FinalEval_SetUpTest:
 
 ### data_processing
 Scripts for dataset splitting, hdf5-generation, data loader, mapping between methods, conversion and affine operations
@@ -45,6 +42,7 @@ Contains inputs for experiments
 ## Run commands
 ### Create hdf5-datasets
 Training, validation set for VINN, CNN + exA, VINNA
+export PYTHONPATH=$PYTHONPATH:/groups/ag-reuter/projects:/groups/ag-reuter/projects/DeepSurfer/FastSurfer:/groups/ag-reuter/projects/DeepSurfer/FastSurfer/FastSurfer
 valcsv=${base}/Dataset_splits/dataset_split_large_validation_t1t2_meta_hires.tsv
 traincsv=${base}/Dataset_splits/dataset_split_large_training_t1t2_meta_hires.tsv
 
@@ -56,19 +54,19 @@ python3 VINNA/data_processing/data_loader/generate_data_hdf5.py \
                                         --sizes 290 --hires min --hires_w 3 --gm
 
 ### Training commands
-Log-files will be written into $base/NeonateVINNA/logs
+Log-files will be written into $base/NeonateVINNA/logs/training. Commands use docker henschell/super_res_surfer:bash
 
 Training CNN + exA
-./VINNA/run_scripts/training_runner.sh --net FastSurferDDB --augS _RotTLScale --plane coronal --mode T2 --base /groups/ag-reuter/projects --gpu 0
+./run_scripts/training_runner.sh --net FastSurferDDB --augS _RotTLScale --plane coronal --mode T2 --base /groups/ag-reuter/projects --gpu 0
 
 Training VINN + exA
-./VINNA/run_scripts/training_runner.sh --net FastSurferVINN --augS _RotTLScale --plane coronal --mode T2 --base /groups/ag-reuter/projects --gpu 0
+./run_scripts/training_runner.sh --net FastSurferVINN --augS _RotTLScale --plane coronal --mode T2 --base /groups/ag-reuter/projects --gpu 0
 
 Training VINNA
-./VINNA/run_scripts/training_runner.sh --net FastSurferVINN --augS _LatentAug --plane coronal --mode T2 --base /groups/ag-reuter/projects --gpu 0 
+./run_scripts/training_runner.sh --net FastSurferVINN --augS _LatentAug --plane coronal --mode T2 --base /groups/ag-reuter/projects --gpu 0 
 
 Training VINNA + exA
-./VINNA/run_scripts/training_runner.sh --net FastSurferVINN --augS _LatentAugRotTLScale --plane coronal --mode T2 --base /groups/ag-reuter/projects --gpu 0 
+./run_scripts/training_runner.sh --net FastSurferVINN --augS _LatentAugRotTLScale --plane coronal --mode T2 --base /groups/ag-reuter/projects --gpu 0 
 
 Training nnUNet
 docker run --gpus device=$gpu -v /groups/ag-reuter/projects/datasets/dHCP/nnUNet_data:/nnUNet_data \
@@ -87,21 +85,23 @@ If you leave it out, the output will be stored relative to the ground truth in t
 will be stored in $outputdir/eval_metrics/${metric}_${model_name}.tsv if --sd $outputdir is set. 
 Otherwise, output will be stored in LOG_DIR from cfg ($base/NeonateVINNA/experiments/eval_metrics)
 - Inference runner automatically runs evaluation on 0.5, 0.8 and 1.0. It currently uses gpu 0, gpu 1 and gpu 2. 
+- Log-files will be written into $base/NeonateVINNA/logs/inference
+- Commands use docker henschell/super_res_surfer:bash
 
 Inference CNN + exA
-./VINNA/run_scripts/inference_runner.sh --net FastSurferDDB --augS _RotTLScale --mode T2 --view all --processing "--save_img" \ 
+./run_scripts/inference_runner.sh --net FastSurferDDB --augS _RotTLScale --mode T2 --view all --processing "--save_img" \ 
                       --csv dataset_split_large_validation_t1t2.csv --setsuffix ValidationSet --sd $outputdir
 
 Inference VINN + exA
-./VINNA/run_scripts/inference_runner.sh --net FastSurferVINN --augS _RotTLScale --mode T2 --view all --processing "--save_img" \ 
+./run_scripts/inference_runner.sh --net FastSurferVINN --augS _RotTLScale --mode T2 --view all --processing "--save_img" \ 
                       --csv dataset_split_large_validation_t1t2.csv --setsuffix ValidationSet --sd $outputdir
 
 Inference VINNA
-./VINNA/run_scripts/inference_runner.sh --net FastSurferVINN --augS _LatentAug --mode T2 --view all --processing "--save_img" \ 
+./run_scripts/inference_runner.sh --net FastSurferVINN --augS _LatentAug --mode T2 --view all --processing "--save_img" \ 
                       --csv dataset_split_large_validation_t1t2.csv --setsuffix ValidationSet --sd $outputdir
 
 Inference VINNA + exA
-./VINNA/run_scripts/inference_runner.sh --net FastSurferVINN --augS _LatentAugRotTLScale --mode T2 --view all --processing "--save_img" \ 
+./run_scripts/inference_runner.sh --net FastSurferVINN --augS _LatentAugRotTLScale --mode T2 --view all --processing "--save_img" \ 
                       --csv dataset_split_large_validation_t1t2.csv --setsuffix ValidationSet --sd $outputdir
 
 Inference nnUNet
