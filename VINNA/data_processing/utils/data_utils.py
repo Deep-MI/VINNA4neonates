@@ -507,7 +507,62 @@ def sagittal_coronal_remap_lookup(x):
     }[x]
 
 
-def map_prediction_sagittal2full(prediction_sag, num_classes=79):
+def unify_lateralized_labels(lut, combi=["Left-", "Right-"]):
+    """
+    Function to generate lookup dictionary of left-right labels
+    :param str or pd.DataFrame lut: either lut-file string to load or pandas dataframe
+                                    Example entry:
+                                    ID LabelName  R   G   B   A
+                                    0   Unknown   0   0   0   0
+                                    1   Left-Cerebral-Exterior 70  130 180 0
+    :param list(str) combi: Prefix or labelnames to combine. Default: Left- and Right-
+    :return dict: dictionary mapping between left and right hemispheres
+    """
+    if isinstance(lut, str):
+        lut = read_classes_from_lut(lut)
+    left = lut[["ID", "LabelName"]][lut["LabelName"].str.startswith(combi[0])]
+    right = lut[["ID", "LabelName"]][lut["LabelName"].str.startswith(combi[1])]
+    left["LabelName"] = left["LabelName"].str.removeprefix(combi[0])
+    right["LabelName"] = right["LabelName"].str.removeprefix(combi[1])
+    mapp = left.merge(right, on="LabelName")
+    return pd.Series(mapp.ID_y.values, index=mapp.ID_x).to_dict()
+
+
+def get_labels_from_lut(lut, label_extract=("Left-", "ctx-rh")):
+    """
+    Function to extract
+    :param str of pd.DataFrame lut: FreeSurfer like LookUp Table (either path to it
+                                    or already loaded as pandas DataFrame.
+                                    Example entry:
+                                    ID LabelName  R   G   B   A
+                                    0   Unknown   0   0   0   0
+                                    1   Left-Cerebral-Exterior 70  130 180 0
+    :param tuple(str) label_extract: suffix of label names to mask for sagittal labels
+                                     Default: "Left-" and "ctx-rh"
+    :return np.ndarray: full label list
+    :return np.ndarray: sagittal label list
+    """
+    if isinstance(lut, str):
+        lut = read_classes_from_lut(lut)
+    mask = lut["LabelName"].str.startswith(label_extract)
+    return lut["ID"].values, lut["ID"][~mask].values
+
+
+def infer_mapping_from_lut(lut):
+    labels, labels_sag = get_labels_from_lut(lut)
+    sagittal_mapping = unify_lateralized_labels(lut)
+    idx_list = np.ndarray(shape=(labels.shape[0],), dtype=np.int16)
+    for idx in range(len(labels)):
+        idx_in_sag = np.where(labels_sag == labels[idx])[0]
+        if idx_in_sag.size == 0:
+            current_label_sag = sagittal_mapping[labels[idx]]
+            idx_in_sag = np.where(labels_sag == current_label_sag)[0]
+
+        idx_list[idx] = idx_in_sag
+    return idx_list
+
+
+def map_prediction_sagittal2full(prediction_sag, lut=None):
     """
     Function to remap the prediction on the sagittal network to full label space used by coronal and axial networks
     (full aparc.DKTatlas+aseg.mgz)
@@ -515,30 +570,8 @@ def map_prediction_sagittal2full(prediction_sag, num_classes=79):
     :param int num_classes: number of classes (96 for full classes, 79 for hemi split, 36 for aseg)
     :return: Remapped prediction
     """
-    if num_classes == 96:
-        idx_list = np.asarray([0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 14, 15, 4, 16,
-                               17, 18, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-                               20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
-                               37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 20, 21, 22,
-                               23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-                               40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50], dtype=np.int16)
-
-    elif num_classes == 51:
-        idx_list = np.asarray([0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 14, 15, 4, 16,
-                               17, 18, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-                               20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
-                               37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 20, 22, 27,
-                               29, 30, 31, 33, 34, 38, 39, 40, 41, 42, 45], dtype=np.int16)
-
-    elif num_classes == 21: # 21 refers to the number of classes in the sagittal view! Full view would be 34
-        idx_list = np.asarray([0,  3,  4,  5,  6,  7,  8,  9, 10, 11,  1,  2, 12, 13, 14, 15,  3,
-                               4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-                              dtype=np.int16)
-
-    elif num_classes == 2:
-        idx_list = np.asarray([0, 1, 1])
-    else:
-        print(f"Number of classes {num_classes} does not match. Must be one of 96, 51, 21 or 2")
+    assert lut is not None, 'lut is not defined!'
+    idx_list = infer_mapping_from_lut(lut)
     prediction_full = prediction_sag[:, idx_list, :, :]
     return prediction_full
 

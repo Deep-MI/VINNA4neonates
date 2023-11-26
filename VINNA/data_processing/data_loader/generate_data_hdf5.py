@@ -8,12 +8,10 @@ import h5py
 import pandas as pd
 
 import sys
-sys.path.append("/groups/ag-reuter/projects/DeepSurfer/FastSurfer/FastSurfer")
 import FastSurfer.FastSurferCNN.data_loader.conform as conf
 import FastSurfer.FastSurferCNN.data_loader.data_utils as du
 
-sys.path.append("/groups/ag-reuter/projects")
-from NeonateVINNA.data_processing.utils.data_utils import transform_axial, transform_sagittal, \
+from NeonateVINNA.VINNA.data_processing.utils.data_utils import transform_axial, transform_sagittal, \
     create_weight_mask, read_classes_from_lut, \
     get_thick_slices, filter_blank_slices_thick, bounding_box_slices, bounding_box_crop, \
     read_lta, rotation_matrix_to_euler
@@ -294,14 +292,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='HDF5-Creation')
 
     parser.add_argument('--hdf5_name', type=str,
-                        default="/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/hdf5_sets/training_bigMixAffine_dHCP_coronal.hdf5",
+                        default="/groups/ag-reuter/projects/NeonateVINNA/experiments/hdf5_sets/training_bigMixAffine_dHCP_coronal.hdf5",
                         help='path and name of hdf5-data_loader (default: ../data/Multires_coronal.hdf5)')
     parser.add_argument('--plane', type=str, default="coronal", choices=["axial", "coronal", "sagittal", "all"],
                         help="Which plane to put into file (axial (default), coronal, sagittal or all (for 3D))")
     parser.add_argument('--data_dir', type=str, default="/groups/ag-reuter/projects/datasets/dHCP/Data/", help="Directory with images to load")
     parser.add_argument('--thickness', type=int, default=3, help="Number of pre- and succeeding slices (default: 3)")
     parser.add_argument('--csv_file', type=str,
-                        default="/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/data/dataset_split_large_training_t1t2_meta.tsv",
+                        default="/groups/ag-reuter/projects/NeonateVINNA/Dataset_splits/dataset_split_large_training_t1t2_meta.tsv",
                         help="Csv-file listing subjects to include in file")
     parser.add_argument('--pattern', type=str, help="Pattern to match files in directory.")
     parser.add_argument('--image_name', type=str, default="T1w.nii.gz",
@@ -335,7 +333,7 @@ if __name__ == '__main__':
     parser.add_argument('--processing', type=str, default="none", choices=["aparc", "aseg", "none"],
                         help="Use aseg, aparc or no specific mapping processing")
     parser.add_argument('--lut', type=str, help='Path and name of lut file (FreeSurfer-like)',
-                        default='/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/configs/FastInfantSurfer_dHCP_LUT.tsv')
+                        default='/groups/ag-reuter/projects/NeonateVINNA/experiments/LUTs/FastInfantSurfer_dHCP_full_LUT.tsv')
     parser.add_argument('--combi', action='append', default=["Left-", "Right-"],
                         help="Suffixes of labels names to combine. Default: Left- and Right-.")
     parser.add_argument('--sag_mask', default=("Left-", "ctx-rh"),
