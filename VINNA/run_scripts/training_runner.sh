@@ -201,22 +201,24 @@ fi
 # Assemble cfg from inputs
 cfg=${net}_Infant_bigMix${suff}${synthseg}_${mode}${augS}_AdamW_Cos_3x3F_71_${br}${labels}_${plane}
 cfgOld=${nnet}_Infant_bigMix_T2_AdamW_Cos_3x3F_71_${br}${labels}_coronal
-log=$base/NeonateVINNA/logs/${net}_${br}_${mode}${labels}${augS}${synthseg}_${plane}.log
+log=$base/NeonateVINNA/logs/training/${net}_${br}_${mode}${labels}${augS}${synthseg}_${plane}.log
 
 # Assemble run call
-echo docker run --gpus device=$gpu \
-    --name henschell_${net}_${plane}_${mode}_${suff}${labels}${augS}${synthseg}_gpu${gpu} -v /home/henschell:/home/henschell \
-    -v $base:$base -v $base:/fastsurfer --rm --user 4323:1275 \
+nohup docker run --gpus device=$gpu \
+    --name henschell_${net}_${plane}_${mode}_${suff}${labels}${augS}${synthseg}_gpu${gpu} \
+    -v $base:$base --rm --user 4323:1275 \
+    --env "PYTHONPATH=/fastsurfer:$base/NeonateVINNA:$base/master-theses/henschell" \
     --shm-size 8G henschell/super_res_surfer:bash \
     python3 $base/master-theses/henschell/SuperResSurfer/run_model.py \
-        --cfg $base/NeonateVINNA/experiments/config/${cfg}/config.yaml \
+        --cfg $base/NeonateVINNA/experiments/config/${nnet}/${augS:1}/${cfg}/config.yaml \
         ${aug} \
-        DATA.PATH_HDF5_TRAIN $base/VINNA/experiments/hdf5_sets/training_bigMix${suff}_dHCP${labels}_${plane}.hdf5 \
-        DATA.PATH_HDF5_VAL $base/VINNA/experiments/hdf5_sets/validation_bigMix${suff}_dHCP${labels}_${plane}.hdf5 \
-        DATA.META_INFO $base/VINNA/Dataset_splits/dataset_split_large_validation_t1t2_meta.tsv \
+        DATA.PATH_HDF5_TRAIN $base/NeonateVINNA/experiments/hdf5_sets/training_bigMix${suff}_dHCP${labels}_${plane}.hdf5 \
+        DATA.PATH_HDF5_VAL $base/NeonateVINNA/experiments/hdf5_sets/validation_bigMix${suff}_dHCP${labels}_${plane}.hdf5 \
+        DATA.META_INFO $base/NeonateVINNA/Dataset_splits/dataset_split_large_validation_t1t2_meta_slices.tsv \
+        DATA.AUGNAME ${augS:1} \
         ${add} ${cl} MODEL.MODEL_NAME ${net} DATA.PLANE ${plane} \
         LOG_DIR $base/NeonateVINNA/experiments \
-        SUMMARY_PATH $base/NeonateVINNA/experiments/summary/ \
-        CONFIG_LOG_PATH $base/NeonateVINNA/experiments/config/${cfg} \
+        SUMMARY_PATH $base/NeonateVINNA/experiments/summary/${nnet}/${augS:1}/ \
+        CONFIG_LOG_PATH $base/NeonateVINNA/experiments/config/${nnet}/${augS:1}/${cfg} \
         DATA.LUT $base/NeonateVINNA/experiments/LUTs/FastInfantSurfer_dHCP${labels}_LUT.tsv \
-        EXPR_NUM ${cfg} TRAIN.RESUME False OPTIMIZER.BASE_LR 0.01 TRAIN.BATCH_SIZE 16 #> $log &
+        EXPR_NUM ${cfg} TRAIN.RESUME False OPTIMIZER.BASE_LR 0.01 TRAIN.BATCH_SIZE 16 > $log &
