@@ -18,6 +18,8 @@ net="FastSurferDDB"  #"FastSurferVINN" # FastSurferSVINN
 view="all"
 suff="AffineNN"
 processing="--save_img" #"--load_pred_from_disk --metrics" # enable to get metrics
+sbjdir=""
+
 #
 
 function usage()
@@ -35,7 +37,10 @@ Usage:
                             --gpu <gpu id (0-6)> \
                             --base <base directory with code (/projects)> \
                             --processing <processing to run "--save_img" or "--load_pred_from_disk --metrics>" \
+                            --gpu <optional gpu to start with. Three res are processed, \
+                                   so three gpus are used; (gpu start, start + 1, start + 2). Default:start=0> \
                             --synthseg <optional synthseg processing ("", SynthSegMix, SynthSegFull)> \
+                            --sd <optional output directory>
 
 training_runner.sh takes input arguments to change training (mode and network). Runs for
 three network main networks are supported:
@@ -60,6 +65,10 @@ FLAGS:
   --setsuffix <model name suffix>       Suffix for model name (img save name; default = ValidationSet).
   --csv <csv-file>                      Csv-file with subjects to analyse (dataset_split_large_validation_t1t2.csv,
                                         dataset_split_large_testing_t1t2.csv)
+  --sd                                  Output directory for images. If undefined, image is stored relative to ground
+                                        truth (mri/aseg.modelname.mgz)
+ --gpu                                  Start GPU. Three resolutions are used, so three gpus are needed. --gpu indicates
+                                        the starting gpu. Default=0 (so 0, 1, 2 will be used).
   -h --help                             Print Help
 
 REFERENCES:
@@ -144,6 +153,16 @@ case $key in
     shift # past argument
     shift # past value
     ;;
+    --sd)
+    sbjdir="--sd $2"
+    shift # past argument
+    shift # past value
+    ;;
+    --gpu)
+    gpu=$2
+    shift # past argument
+    shift # past value
+    ;;
     --csv)
     csv=${base}/NeonateVINNA/Dataset_splits/"$2"
     shift # past argument
@@ -182,21 +201,21 @@ for inferres in "05" "08" "10"; do
     #TestingSet_nnUNet_${mode}_${inferres}_${infermode}${augS}${labels} --> --fs --add_subject
 
     if [ "$view" == "cor" ]; then
-        add="--ckpt_cor ${base}/NeonateVINNA/experiments/checkpoints/${cfg}_coronal/Best_training_state.pkl \
-              --cfg_cor ${base}/NeonateVINNA/experiments/config/${cfg}_coronal/config.yaml"
+        add="--ckpt_cor ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_coronal/Best_training_state.pkl \
+              --cfg_cor ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_coronal/config.yaml"
     elif [ "$view" == "sag" ]; then
-        add="--ckpt_sag ${base}/NeonateVINNA/experiments/checkpoints/${cfg}_sagittal/Best_training_state.pkl \
-              --cfg_sag ${base}/NeonateVINNA/experiments/config/${cfg}_sagittal/config.yaml"
+        add="--ckpt_sag ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_sagittal/Best_training_state.pkl \
+              --cfg_sag ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_sagittal/config.yaml"
     elif [ "$view" == "ax" ]; then
-        add="--ckpt_ax ${base}/NeonateVINNA/experiments/checkpoints/${cfg}_axial/Best_training_state.pkl \
-            --cfg_ax ${base}/NeonateVINNA/experiments/config/${cfg}_axial/config.yaml"
+        add="--ckpt_ax ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_axial/Best_training_state.pkl \
+            --cfg_ax ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_axial/config.yaml"
     else
-        add="--ckpt_cor ${base}/NeonateVINNA/experiments/checkpoints/${cfg}_coronal/Best_training_state.pkl \
-            --cfg_cor ${base}/NeonateVINNA/experiments/config/${cfg}_coronal/config.yaml \
-              --ckpt_ax ${base}/NeonateVINNA/experiments/checkpoints/${cfg}_axial/Best_training_state.pkl \
-              --cfg_ax ${base}/NeonateVINNA/experiments/config/${cfg}_axial/config.yaml \
-              --ckpt_sag ${base}/NeonateVINNA/experiments/checkpoints/${cfg}_sagittal/Best_training_state.pkl \
-              --cfg_sag ${base}/NeonateVINNA/experiments/config/${cfg}_sagittal/config.yaml"
+        add="--ckpt_cor ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_coronal/Best_training_state.pkl \
+            --cfg_cor ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_coronal/config.yaml \
+              --ckpt_ax ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_axial/Best_training_state.pkl \
+              --cfg_ax ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_axial/config.yaml \
+              --ckpt_sag ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_sagittal/Best_training_state.pkl \
+              --cfg_sag ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_sagittal/config.yaml"
     fi
 
     if [ "$labels" == "_full" ]; then
@@ -220,27 +239,28 @@ for inferres in "05" "08" "10"; do
     fi
 
     echo $gt $mn
-    echo "docker run --gpus device=${gpu} --name henschell_${mn}_gpu${gpu} -v /home/henschell:/home/henschell \
+    echo "docker run --gpus device=${gpu} --name henschell_${mn}_gpu${gpu} \
             -v $base:$base -v $base:/fastsurfer --rm --user 4323:1275 -v /groups/ag-reuter/projects/datasets:/groups/ag-reuter/projects/datasets \
             -v /groups/ag-reuter/datasets:/groups/ag-reuter/datasets \
             --shm-size 8G henschell/super_res_surfer:bash \
-            nohup python3 $base/SuperResSurfer/run_validation.py --gt_name $gt --orig_name $orig --csv_file $csv \
-                                         --add_subject --model_name $mn $processing \
+            nohup python3 $base/master-theses/henschell/SuperResSurfer/run_validation.py --gt_name $gt --orig_name $orig --csv_file $csv \
+                                         --add_subject --model_name $mn $processing $sbjdir \
                                          --lut ${lut} \
                           --batch_size 1 $add"
-    docker run --name henschell_${mn}_gpu${gpu} -v /home/henschell:/home/henschell \
-            -v $base:$base -v $base:/fastsurfer --rm --user 4323:1275 -v /groups/ag-reuter/projects/datasets:/groups/ag-reuter/projects/datasets \
+    nohup docker run --gpus device=${gpu} --name henschell_${mn}_gpu${gpu}  \
+            -v $base:$base --rm --user 4323:1275 \
+            -v /groups/ag-reuter/projects/datasets:/groups/ag-reuter/projects/datasets \
             -v /groups/ag-reuter/datasets:/groups/ag-reuter/datasets \
+            --env "PYTHONPATH=/fastsurfer:/groups/ag-reuter/projects:/groups/ag-reuter/projects/master-theses/henschell:/groups/ag-reuter/projects/DeepSurfer/FastSurfer:/groups/ag-reuter/projects/DeepSurfer/FastSurfer/FastSurfer" \
             --shm-size 8G henschell/super_res_surfer:bash \
-            nohup python3 $base/SuperResSurfer/run_validation.py --gt_name $gt --orig_name $orig --csv_file $csv \
-                                         --add_subject --model_name $mn $processing \
+            nohup python3 $base/master-theses/henschell/SuperResSurfer/run_validation.py --gt_name $gt --orig_name $orig --csv_file $csv \
+                                         --add_subject --model_name $mn $processing $sbjdir \
                                          --lut ${lut} \
-                          --batch_size 1 $add > $base/FastInfantSurfer/logs/${mn}.log &
+                          --batch_size 1 $add > $base/NeonateVINNA/logs/inference/${mn}.log &
 
-        if [ $gpu -le 6 ]; then
-          let "gpu+=1"
-        else
-          gpu=0
-        fi
-    done
+    if [ $gpu -le 6 ]; then
+      let "gpu+=1"
+    else
+      gpu=0
+    fi
 done
