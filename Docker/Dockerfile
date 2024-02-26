@@ -5,7 +5,7 @@ ARG CONDA_FILE=Miniconda3-py38_4.11.0-Linux-x86_64.sh
 ENV DEBIAN_FRONTEND=noninteractive
 
 # get install scripts into docker
-COPY ./fastsurfer_env_gpu.yaml /NeonateVINNA/fastsurfer_env_gpu.yaml
+COPY ./Docker/fastsurfer_env_gpu.yaml /NeonateVINNA/fastsurfer_env_gpu.yaml
 
 # Install packages needed for build
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -60,7 +60,8 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 # Copy venv and FastSurferCNN
 COPY --from=build /venv /venv
-COPY . /NeonateVINNA/ 
+COPY --from=build /FastSurfer /FastSurfer
+COPY . /NeonateVINNA/
 
 # Set all Pythonpath references already
 ENV PYTHONPATH=/FastSurfer:/NeonateVINNA:$PYTHONPATH \
@@ -70,5 +71,6 @@ ENV PYTHONPATH=/FastSurfer:/NeonateVINNA:$PYTHONPATH \
 # Set Workdir and entrypoint
 #  the script entrypoint ensures that our conda env is active
 WORKDIR "/NeonateVINNA"
-ENTRYPOINT ["/FastSurfer/Docker/entrypoint.sh", "bash", "./run_scripts/single_img_inference.sh"]
+USER nonroot
+ENTRYPOINT ["/FastSurfer/Docker/entrypoint.sh", "bash", "./run_scripts/single_img_inference.sh", "--no_docker"]
 CMD ["--help"]

@@ -5,11 +5,11 @@ import time
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-import NeonateVINNA.VINNA.utils.logging_utils as logging_u
-from NeonateVINNA.VINNA.models.networks import build_model
-from NeonateVINNA.VINNA.data_processing.augmentation.augmentation import ToTensor, ZeroPad
-from NeonateVINNA.VINNA.data_processing.utils.data_utils import map_prediction_sagittal2full
-from NeonateVINNA.VINNA.data_processing.data_loader.dataset import MultiScaleOrigDataThickSlices
+import VINNA.utils.logging_utils as logging_u
+from VINNA.models.networks import build_model
+from VINNA.data_processing.augmentation.augmentation import ToTensor, ZeroPad
+from VINNA.data_processing.utils.data_utils import map_prediction_sagittal2full
+from VINNA.data_processing.data_loader.dataset import MultiScaleOrigDataThickSlices
 
 
 logger = logging_u.get_logger(__name__)
@@ -119,6 +119,7 @@ class Inference:
         from tqdm import tqdm
         with logging_redirect_tqdm():
             try:
+                batch_idx = -1
                 for batch_idx, batch in tqdm(enumerate(val_loader), total=len(val_loader), unit="batch"):
 
                     # Move data to the model device
@@ -147,7 +148,10 @@ class Inference:
                         pred_prob[start_index:start_index + pred.shape[0], :, :, :] += torch.mul(pred, 0.2)
                         start_index += pred.shape[0]
             except:
-                logger.exception("Exception in batch {} of {} inference.".format(batch_idx, self.cfg.DATA.PLANE))
+                if batch_idx > 0:
+                    logger.exception("Exception in batch {} of {} inference.".format(batch_idx, self.cfg.DATA.PLANE))
+                else:
+                    logger.exception("Exception before first batch {} of {} inference.".format(batch_idx, self.cfg.DATA.PLANE))
                 raise
             else:
                 logger.info("Inference on {} batches for {} successful".format(batch_idx + 1, self.cfg.DATA.PLANE))

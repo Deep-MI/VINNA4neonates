@@ -1,0 +1,6 @@
+#No. "DHCP Label Name:" R G B A
+0 Unknown 0 0 0 0
+2 Cerebral-Cortex 205 62 78 0
+3 Cerebral-White-Matter 245 245 245 0
+1 CSF 0 0 0 0
+5 Other 0 0 0 0

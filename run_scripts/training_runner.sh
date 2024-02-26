@@ -183,10 +183,10 @@ fi
 # Set number classes, LUTs
 if [ "$plane" == "sagittal" ]; then # 89 full, 47 sagittal
     cl="$cl MODEL.NUM_CLASSES 47"
-    add="$add DATA.SYNTHSEG_LUT ${base}/NeonateVINNA/experiments/LUTs/synthseg_infant_test_sagittal.tsv"
+    add="$add DATA.SYNTHSEG_LUT ${base}/NeonateVINNA/VINNA/config/LUTs/synthseg_infant_test_sagittal.tsv"
 else
     cl="$cl MODEL.NUM_CLASSES 89"
-    add="$add DATA.SYNTHSEG_LUT ${base}/NeonateVINNA/experiments/LUTs/synthseg_infant_test.tsv"
+    add="$add DATA.SYNTHSEG_LUT ${base}/NeonateVINNA/VINNA/config/LUTs/synthseg_infant_test.tsv"
 fi
 
 # Add Synthseg processing if wanted
@@ -210,7 +210,7 @@ nohup docker run --gpus device=$gpu \
     --env "PYTHONPATH=/fastsurfer:$base:$base/master-theses/henschell" \
     --shm-size 8G henschell/super_res_surfer:bash \
     python3 $base/NeonateVINNA/VINNA/run_model.py \
-        --cfg $base/NeonateVINNA/experiments/config/${nnet}/${augS:1}/${cfgOld}/config.yaml \
+        --cfg $base/NeonateVINNA/VINNA/config/${nnet}/${augS:1}/${cfgOld}/config.yaml \
         ${aug} \
         DATA.PATH_HDF5_TRAIN $base/NeonateVINNA/experiments/hdf5_sets/training_bigMix${suff}_dHCP${labels}_${plane}.hdf5 \
         DATA.PATH_HDF5_VAL $base/NeonateVINNA/experiments/hdf5_sets/validation_bigMix${suff}_dHCP${labels}_${plane}.hdf5 \
@@ -219,6 +219,6 @@ nohup docker run --gpus device=$gpu \
         ${add} ${cl} MODEL.MODEL_NAME ${net} DATA.PLANE ${plane} \
         LOG_DIR $base/NeonateVINNA/experiments \
         SUMMARY_PATH $base/NeonateVINNA/experiments/summary/${nnet}/${augS:1}/ \
-        CONFIG_LOG_PATH $base/NeonateVINNA/experiments/config/${nnet}/${augS:1}/${cfg} \
-        DATA.LUT $base/NeonateVINNA/experiments/LUTs/FastInfantSurfer_dHCP${labels}_LUT.tsv \
+        CONFIG_LOG_PATH $base/NeonateVINNA/VINNA/config/${nnet}/${augS:1}/${cfg} \
+        DATA.LUT $base/NeonateVINNA/VINNA/config/LUTs/FastInfantSurfer_dHCP${labels}_LUT.tsv \
         EXPR_NUM ${cfg} TRAIN.RESUME False OPTIMIZER.BASE_LR 0.01 TRAIN.BATCH_SIZE 16 > $log &

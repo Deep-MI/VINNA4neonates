@@ -1,0 +1,13 @@
+#No. DHCP Label Name:                       R   G   B   A
+
+0   Unknown                                 0   0   0   0
+1   CSF                                     60  60  60  0
+2   Cortical_gray_matter                    205 62  78  0 #205 63  78  0
+3   White_matter                            245 245 245 0 #0   226 0   0
+4   Background                              100 100 100 0
+5   Ventricles                              120 18  134 0 # 121 17  136 0
+6   Cerebellum                              230 148 34  0
+7   Deep_Gray_Matter                        0	118 14  0
+8   Brainstem                               119 159 176 0
+9   Hippocampi_and_Amygdala                 220	216 20  0     
+

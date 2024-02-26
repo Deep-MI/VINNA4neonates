@@ -4,10 +4,10 @@ import pandas as pd
 from torchvision import transforms
 from torch.utils.data import DataLoader
 import torchio as tio
-import NeonateVINNA.VINNA.data_processing.data_loader.dataset as dset
-from NeonateVINNA.VINNA.data_processing.augmentation.augmentation import ToTensor, ZeroPad, \
+import VINNA.data_processing.data_loader.dataset as dset
+from VINNA.data_processing.augmentation.augmentation import ToTensor, ZeroPad, \
     AddGaussianNoise, RandomAffine, RandomLabelsToImage
-import NeonateVINNA.VINNA.utils.logging_utils as logging_u
+import VINNA.utils.logging_utils as logging_u
 
 logger = logging_u.get_logger(__name__)
 

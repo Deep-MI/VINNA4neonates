@@ -6,7 +6,7 @@
 
 labels="_full"
 base=/groups/ag-reuter/projects
-lut=${base}/NeonateVINNA/experiments/LUTs/FastInfantSurfer_dHCP${labels}_LUT.tsv
+lut=${base}/NeonateVINNA/VINNA/config/LUTs/FastInfantSurfer_dHCP${labels}_LUT.tsv
 csv=${base}/NeonateVINNA/Dataset_splits/dataset_split_large_validation_t1t2.csv #iseg_dirs.csv   #uc_davis_dirs.csv #dataset_split_large_testing_t1t2.csv
 
 gpu=0
@@ -201,21 +201,21 @@ for inferres in "05" "08" "10"; do
     #TestingSet_nnUNet_${mode}_${inferres}_${infermode}${augS}${labels} --> --fs --add_subject
 
     if [ "$view" == "cor" ]; then
-        add="--ckpt_cor ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_coronal/Best_training_state.pkl \
-              --cfg_cor ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_coronal/config.yaml"
+        add="--ckpt_cor ${base}/NeonateVINNA/checkpoints/${net}/${augS:1}/${cfg}_coronal/Best_training_state.pkl \
+              --cfg_cor ${base}/NeonateVINNA/VINNA/config/${net}/${augS:1}/${cfg}_coronal/config.yaml"
     elif [ "$view" == "sag" ]; then
-        add="--ckpt_sag ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_sagittal/Best_training_state.pkl \
-              --cfg_sag ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_sagittal/config.yaml"
+        add="--ckpt_sag ${base}/NeonateVINNA/checkpoints/${net}/${augS:1}/${cfg}_sagittal/Best_training_state.pkl \
+              --cfg_sag ${base}/NeonateVINNA/VINNA/config/${net}/${augS:1}/${cfg}_sagittal/config.yaml"
     elif [ "$view" == "ax" ]; then
-        add="--ckpt_ax ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_axial/Best_training_state.pkl \
-            --cfg_ax ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_axial/config.yaml"
+        add="--ckpt_ax ${base}/NeonateVINNA/checkpoints/${net}/${augS:1}/${cfg}_axial/Best_training_state.pkl \
+            --cfg_ax ${base}/NeonateVINNA/VINNA/config/${net}/${augS:1}/${cfg}_axial/config.yaml"
     else
-        add="--ckpt_cor ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_coronal/Best_training_state.pkl \
-            --cfg_cor ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_coronal/config.yaml \
-              --ckpt_ax ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_axial/Best_training_state.pkl \
-              --cfg_ax ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_axial/config.yaml \
-              --ckpt_sag ${base}/NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_sagittal/Best_training_state.pkl \
-              --cfg_sag ${base}/NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_sagittal/config.yaml"
+        add="--ckpt_cor ${base}/NeonateVINNA/checkpoints/${net}/${augS:1}/${cfg}_coronal/Best_training_state.pkl \
+            --cfg_cor ${base}/NeonateVINNA/VINNA/config/${net}/${augS:1}/${cfg}_coronal/config.yaml \
+              --ckpt_ax ${base}/NeonateVINNA/checkpoints/${net}/${augS:1}/${cfg}_axial/Best_training_state.pkl \
+              --cfg_ax ${base}/NeonateVINNA/VINNA/config/${net}/${augS:1}/${cfg}_axial/config.yaml \
+              --ckpt_sag ${base}/NeonateVINNA/checkpoints/${net}/${augS:1}/${cfg}_sagittal/Best_training_state.pkl \
+              --cfg_sag ${base}/NeonateVINNA/VINNA/config/${net}/${augS:1}/${cfg}_sagittal/config.yaml"
     fi
 
     if [ "$labels" == "_full" ]; then

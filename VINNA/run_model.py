@@ -4,9 +4,9 @@ import argparse
 import json
 import h5py
 
-import NeonateVINNA.VINNA.utils.misc as misc
-from NeonateVINNA.VINNA.utils.load_config import get_config
-from NeonateVINNA.VINNA.train import Trainer
+import VINNA.utils.misc as misc
+from VINNA.utils.load_config import get_config
+from VINNA.train import Trainer
 
 
 def setup_options():

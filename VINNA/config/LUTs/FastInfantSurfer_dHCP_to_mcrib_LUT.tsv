@@ -1,0 +1,12 @@
+"ID"	"LabelName"	"R"	"G"	"B"	"A"
+0	"Unknown"	0	0	0	0
+1	"Left-Hippocampus"	220	216	20	0
+2	"Right-Hippocampus"	220	216	20	0
+3	"Left-Amygdala"	103	255	255	0
+4	"Right-Amygdala"	103	255	255	0
+5	"Left-Lateral-Ventricle"	120	18	134	0
+6	"Right-Lateral-Ventricle"	120	18	134	0
+7	"Left-Cerebral-Cortex"	205	62	78	0
+8	"Right-Cerebral-Cortex"	205	62	78	0
+9	"Left-Cerebral-White-Matter"	245	245	245	0
+10	"Right-Cerebral-White-Matter"	245	245	245	0

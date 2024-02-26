@@ -1,11 +1,11 @@
 import torch
 import numpy as np
-import NeonateVINNA.VINNA.utils.logging_utils as logging_u
+import VINNA.utils.logging_utils as logging_u
 import SimpleITK as sitk
 import os
 from typing import List
 
-import NeonateVINNA.VINNA.data_processing.utils.data_utils as du
+import VINNA.data_processing.utils.data_utils as du
 
 logger = logging_u.get_logger(__name__)
 

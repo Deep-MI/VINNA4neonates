@@ -7,13 +7,14 @@ id=""
 mode="T2"
 infermode=${mode}
 labels="_full"
-lut=/NeonateVINNA/experiments/LUTs/FastInfantSurfer_dHCP${labels}_LUT.tsv #iBEAT_LUT.tsv #
+lut=/NeonateVINNA/VINNA/config/LUTs/FastInfantSurfer_dHCP${labels}_LUT.tsv #iBEAT_LUT.tsv #
 augS="_LatentAugPlus"
 net="FastSurferVINN"  #"FastSurferVINN"
 view="all"
 suff="AffineNN" #
 processing="--save_img --single_img" #"--load_pred_from_disk --metrics" #
 add=""
+use_docker="true"
 #
 function usage()
 {
@@ -131,6 +132,10 @@ case $key in
     shift # past argument
     shift # past value
     ;;
+    --no_docker)
+    use_docker="false"
+    shift
+    ;;
     -h|--help)
     usage
     exit
@@ -157,19 +162,28 @@ fi
 cfg=${net}_Infant_bigMix${suff}_${mode}${augS}_AdamW_Cos_3x3F_71_${br}${labels}
 mn=${net}${augS}
 
-add="${add} --ckpt_cor /NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_coronal/Best_training_state.pkl \
-     --cfg_cor /NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_coronal/config.yaml \
-     --ckpt_ax /NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_axial/Best_training_state.pkl \
-     --cfg_ax /NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_axial/config.yaml \
-     --ckpt_sag /NeonateVINNA/experiments/checkpoints/${net}/${augS:1}/${cfg}_sagittal/Best_training_state.pkl \
-     --cfg_sag /NeonateVINNA/experiments/config/${net}/${augS:1}/${cfg}_sagittal/config.yaml  \
+add="${add} --ckpt_cor /NeonateVINNA/checkpoints/${net}/${augS:1}/${cfg}_coronal/Best_training_state.pkl \
+     --cfg_cor /NeonateVINNA/VINNA/config/${net}/${augS:1}/${cfg}_coronal/config.yaml \
+     --ckpt_ax /NeonateVINNA/checkpoints/${net}/${augS:1}/${cfg}_axial/Best_training_state.pkl \
+     --cfg_ax /NeonateVINNA/VINNA/config/${net}/${augS:1}/${cfg}_axial/config.yaml \
+     --ckpt_sag /NeonateVINNA/checkpoints/${net}/${augS:1}/${cfg}_sagittal/Best_training_state.pkl \
+     --cfg_sag /NeonateVINNA/VINNA/config/${net}/${augS:1}/${cfg}_sagittal/config.yaml  \
      --combine --orig_name mri/orig.mgz"
+
+if [[ "$use_docker" == "true" ]]
+then
 
 docker run --gpus device=${gpu} --name ${mn}_gpu${gpu}  \
             --rm --user $(id -u):$(id -g) \
             -v $sd:$sd \
             -v $id:$id \
             --shm-size 8G neonatevinna:gpu-beta \
-            nohup python3 /NeonateVINNA/VINNA/run_validation.py --sd ${sd} --tw ${id}/${orig} --sid ${sid}\
+            python3 /NeonateVINNA/VINNA/run_validation.py --sd ${sd} --tw ${id}/${orig} --sid ${sid}\
                                          --model_name $mn $processing \
                                          --lut ${lut} --batch_size 1 $add
+
+else
+python3 /NeonateVINNA/VINNA/run_validation.py --sd ${sd} --tw ${id}/${orig} --sid ${sid}\
+                             --model_name $mn $processing \
+                             --lut ${lut} --batch_size 1 $add
+fi

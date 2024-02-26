@@ -1,6 +1,6 @@
 # IMPORTS
 from os.path import join, split, splitext
-from NeonateVINNA.VINNA.config import get_cfg_defaults
+from VINNA.config import get_cfg_defaults
 
 
 def get_config(args):

@@ -47,14 +47,14 @@ docker run --gpus device=${gpu} --name NeonateVINNA  \
             nohup python3 /NeonateVINNA/VINNA/run_validation.py --tw ${id}/${orig} \
                                          --sd ${sd} --sid ${sid}\
                                          --model_name ${mn}  \
-                                         --ckpt_cor /NeonateVINNA/experiments/checkpoints/${net}/${augS}/${cfg}_coronal/Best_training_state.pkl \
-                                         --cfg_cor /NeonateVINNA/experiments/config/${net}/${augS}/${cfg}_coronal/config.yaml \
-                                         --ckpt_ax /NeonateVINNA/experiments/checkpoints/${net}/${augS}/${cfg}_axial/Best_training_state.pkl \
-                                         --cfg_ax /NeonateVINNA/experiments/config/${net}/${augS}/${cfg}_axial/config.yaml \
-                                         --ckpt_sag /NeonateVINNA/experiments/checkpoints/${net}/${augS}/${cfg}_sagittal/Best_training_state.pkl \
-                                         --cfg_sag /NeonateVINNA/experiments/config/${net}/${augS}/${cfg}_sagittal/config.yaml  \
+                                         --ckpt_cor /NeonateVINNA/checkpoints/${net}/${augS}/${cfg}_coronal/Best_training_state.pkl \
+                                         --cfg_cor /NeonateVINNA/VINNA/config/${net}/${augS}/${cfg}_coronal/config.yaml \
+                                         --ckpt_ax /NeonateVINNA/checkpoints/${net}/${augS}/${cfg}_axial/Best_training_state.pkl \
+                                         --cfg_ax /NeonateVINNA/VINNA/config/${net}/${augS}/${cfg}_axial/config.yaml \
+                                         --ckpt_sag /NeonateVINNA/checkpoints/${net}/${augS}/${cfg}_sagittal/Best_training_state.pkl \
+                                         --cfg_sag /NeonateVINNA/VINNA/config/${net}/${augS}/${cfg}_sagittal/config.yaml  \
                                          --combine --orig_name mri/orig.mgz \
-                                         --lut /NeonateVINNA/experiments/LUTs/FastInfantSurfer_dHCP_full_LUT.tsv \
+                                         --lut /NeonateVINNA/VINNA/config/LUTs/FastInfantSurfer_dHCP_full_LUT.tsv \
                                          --batch_size 1 --single_img --save_img
 ```
 

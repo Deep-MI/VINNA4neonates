@@ -1,0 +1,5 @@
+ID	LabelName	R	G	B	A	ColorName	MappedID	SagID
+0	Unknown	0	0	0	0	black	0	0
+1	CSF	60	60	60	0	darkslategray	1	1
+2	Cerebral-Cortex	205	62	78	0	indianred	2	2
+3	Cerebral-White-Matter	245	245	245	0	whitesmoke	3	3

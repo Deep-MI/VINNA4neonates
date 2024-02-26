@@ -11,7 +11,7 @@ try:
 except Exception as e:
     print(f"Wandb not installed: {e}")
 
-from NeonateVINNA.VINNA.utils import colormapper as col
+from VINNA.utils import colormapper as col
 
 
 def log_image_table(images, predicted, labels, probs, num_classes=34):

@@ -297,7 +297,7 @@ _C.WANDB_PROJECT = "BabySurfer"
 
 # Summary and config log paths
 _C.SUMMARY_PATH = "./experiments/summary"
-_C.CONFIG_LOG_PATH = "./experiments/config"
+_C.CONFIG_LOG_PATH = "./VINNA/config"
 
 def get_cfg_defaults():
     """Get a yacs CfgNode object with default values for my_project."""

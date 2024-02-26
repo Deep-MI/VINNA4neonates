@@ -7,13 +7,14 @@ import nibabel as nib
 import pandas as pd
 import re
 import argparse
-import FastSurfer.FastSurferCNN.data_loader.conform as conf
+import FastSurferCNN.data_loader.conform as conf
+from FastSurferCNN.utils.arg_types import vox_size
 
-from NeonateVINNA.VINNA.eval import Inference
-import NeonateVINNA.VINNA.utils.metrics as metrics
-from NeonateVINNA.VINNA.utils.load_config import load_config
-import NeonateVINNA.VINNA.data_processing.utils.data_utils as du
-from NeonateVINNA.VINNA.data_processing.mapping import hcp_mapping_script as hms
+from VINNA.eval import Inference
+import VINNA.utils.metrics as metrics
+from VINNA.utils.load_config import load_config
+import VINNA.data_processing.utils.data_utils as du
+from VINNA.data_processing.mapping import hcp_mapping_script as hms
 
 
 ##
@@ -61,6 +62,7 @@ class RunMetricsData:
 
           # Model changes for inference
           scale_only bool: Only intensity scale input image, do not conform to LIA
+          vox_size float/"min": voxel size to conform to
           outdims int: dimension of the output of the network (if set to 0, PADDED_SIZE from cfg is used)
 
           # If SuperRes, the image can be rescaled to a different size (FlexSurfer, Membership interpolation)
@@ -100,6 +102,7 @@ class RunMetricsData:
 
         #self.mem_interpol = args.membership_interpol
         self.scale_only = dict_args["scale_only"]
+        self.vox_size = dict_args.get("vox_size", "min")
 
         # If SuperRes, the image can be rescaled to a different size (FlexSurfer, Membership interpolation)
         self.out_scale_factor = dict_args["scale_output"]
@@ -179,7 +182,7 @@ class RunMetricsData:
                 self.orig_data = np.uint8(np.rint(img))
             else:
                 print('Re-scaling and Conforming image to min size')
-                self.orig = conf.conform(self.orig, conform_vox_size="min")
+                self.orig = conf.conform(self.orig, conform_vox_size=self.vox_size)
                 self.orig_data = np.asarray(self.orig.get_fdata(), dtype=np.uint8)
 
         # Calculate output dimensions for the image output (voxelsize, dimensions)
@@ -511,6 +514,8 @@ def arg_setup():
                         help="Add subject name as prefix to ground truth (for orig res inference)")
     parser.add_argument('--scale_only', action='store_true', default=False,
                         help="Only re-scale the input intensity image, do not change orientation (no conforming)")
+    parser.add_argument('--vox_size', default="min", type=vox_size,
+                        help="voxel size to conform to (default: min)")
     parser.add_argument('--fs', action='store_true', default=False,
                         help="Use aseg from freesurfer as <prediction>")
     parser.add_argument('--combine', action='store_true', default=False,

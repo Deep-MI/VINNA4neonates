@@ -14,8 +14,8 @@
 
 # IMPORTS
 import torch.nn as nn
-import NeonateVINNA.VINNA.models.sub_module as sm
-import NeonateVINNA.VINNA.models.interpolation_layer as il
+import VINNA.models.sub_module as sm
+import VINNA.models.interpolation_layer as il
 import numpy as np
 
 

@@ -1,0 +1,5 @@
+#No. "ibeat Label Name:" R G B A
+0 Unknown 0 0 0 0
+1 CSF 27 158 119 0
+2 Cerebral-Cortex 217 95 2 0
+3 Cerebral-White-Matter 117 112 179 0

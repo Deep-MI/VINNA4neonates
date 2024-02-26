@@ -8,10 +8,10 @@ import h5py
 import pandas as pd
 
 import sys
-import FastSurfer.FastSurferCNN.data_loader.conform as conf
-import FastSurfer.FastSurferCNN.data_loader.data_utils as du
+import FastSurferCNN.data_loader.conform as conf
+import FastSurferCNN.data_loader.data_utils as du
 
-from NeonateVINNA.VINNA.data_processing.utils.data_utils import transform_axial, transform_sagittal, \
+from VINNA.data_processing.utils.data_utils import transform_axial, transform_sagittal, \
     create_weight_mask, read_classes_from_lut, \
     get_thick_slices, filter_blank_slices_thick, bounding_box_slices, bounding_box_crop, \
     read_lta, rotation_matrix_to_euler
@@ -333,7 +333,7 @@ if __name__ == '__main__':
     parser.add_argument('--processing', type=str, default="none", choices=["aparc", "aseg", "none"],
                         help="Use aseg, aparc or no specific mapping processing")
     parser.add_argument('--lut', type=str, help='Path and name of lut file (FreeSurfer-like)',
-                        default='/groups/ag-reuter/projects/NeonateVINNA/experiments/LUTs/FastInfantSurfer_dHCP_full_LUT.tsv')
+                        default='/groups/ag-reuter/projects/NeonateVINNA/LUTs/FastInfantSurfer_dHCP_full_LUT.tsv')
     parser.add_argument('--combi', action='append', default=["Left-", "Right-"],
                         help="Suffixes of labels names to combine. Default: Left- and Right-.")
     parser.add_argument('--sag_mask', default=("Left-", "ctx-rh"),

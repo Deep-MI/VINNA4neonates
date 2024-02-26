@@ -11,18 +11,18 @@ import pandas as pd
 from collections import defaultdict
 import wandb
 
-from NeonateVINNA.VINNA.models.networks import build_model
-from NeonateVINNA.VINNA.models.optimizer import get_optimizer
-from NeonateVINNA.VINNA.models.losses import get_loss_func
+from VINNA.models.networks import build_model
+from VINNA.models.optimizer import get_optimizer
+from VINNA.models.losses import get_loss_func
 
-import NeonateVINNA.VINNA.data_processing.data_loader.loader as loader
-from NeonateVINNA.VINNA.data_processing.utils.data_utils import read_classes_from_lut
+import VINNA.data_processing.data_loader.loader as loader
+from VINNA.data_processing.utils.data_utils import read_classes_from_lut
 
-import NeonateVINNA.VINNA.utils.checkpoint as cp
-from NeonateVINNA.VINNA.utils.lr_scheduler import get_lr_scheduler
-from NeonateVINNA.VINNA.utils.metrics import iou_score, precision_recall, evaluate_metrics
-from NeonateVINNA.VINNA.utils.misc import update_num_steps, plot_predictions
-import NeonateVINNA.VINNA.utils.logging_utils as logging_u
+import VINNA.utils.checkpoint as cp
+from VINNA.utils.lr_scheduler import get_lr_scheduler
+from VINNA.utils.metrics import iou_score, precision_recall, evaluate_metrics
+from VINNA.utils.misc import update_num_steps, plot_predictions
+import VINNA.utils.logging_utils as logging_u
 
 logger = logging_u.get_logger(__name__)
 

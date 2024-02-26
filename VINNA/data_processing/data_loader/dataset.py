@@ -6,9 +6,9 @@ from torch.utils.data import Dataset
 import torchio as tio
 import time
 
-import NeonateVINNA.VINNA.data_processing.utils.data_utils as du
-import NeonateVINNA.VINNA.utils.logging_utils as logging_u
-import NeonateVINNA.VINNA.data_processing.augmentation.augmentation as aug
+import VINNA.data_processing.utils.data_utils as du
+import VINNA.utils.logging_utils as logging_u
+import VINNA.data_processing.augmentation.augmentation as aug
 
 logger = logging_u.get_logger(__name__)
 

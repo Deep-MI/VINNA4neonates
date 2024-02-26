@@ -1,0 +1,9 @@
+"ID"	"LabelName"	"R"	"G"	"B"	"A"
+0	"Background"	0	0	0	0
+1	"CSF"	60	60	60	0
+2	"Cerebral-Cortex"	205	62	78	0
+3	"Cerebral-White-Matter"	245	245	245	0
+4	"Lateral-Ventricles"	120	18	134	0
+5	"Cerebellum"	230	148	164	0
+6	"Thalamus"	0	118	14	0
+7	"Brainstem"	119	159	176	0
