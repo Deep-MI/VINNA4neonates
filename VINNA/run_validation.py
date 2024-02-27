@@ -176,12 +176,61 @@ class RunMetricsData:
         print(f" Pre-Input image - VS: {self.orig.header.get_zooms()}, Dim: {self.orig_data.shape}")
         if not conf.is_conform(self.orig, conform_vox_size="min", check_dtype=True):
             if self.scale_only:
-                print('Re-scaling image. No orientation change')
-                src_min, scale = conf.getscale(self.orig_data, 0, 255)
-                img = conf.scalecrop(self.orig_data, 0, 255, src_min, scale)
-                self.orig_data = np.uint8(np.rint(img))
+                if self.vox_size == "min":
+                    print('Re-scaling image. No orientation change')
+                    src_min, scale = conf.getscale(self.orig_data, 0, 255)
+                    img = conf.scalecrop(self.orig_data, 0, 255, src_min, scale)
+                    self.orig_data = np.uint8(np.rint(img))
+                else:
+                    print(f'Re-scaling image, scaling to {self.vox_size}. No orientation change')
+                    from nibabel.freesurfer.mghformat import MGHHeader
+
+                    conformed_vox_size, conformed_img_size = conf.get_conformed_vox_img_size(
+                        self.orig, self.vox_size,
+                    )
+                    # limit image size to 320
+                    if conformed_img_size > 256:
+                        conformed_img_size = 256
+                    # may copy some parameters if input was MGH format
+                    h1 = MGHHeader.from_header(self.orig.header)
+
+                    h1.set_data_shape(
+                        [conformed_img_size, conformed_img_size, conformed_img_size, 1])
+                    h1.set_zooms(
+                        [conformed_vox_size, conformed_vox_size, conformed_vox_size]
+                    )  # --> h1['delta']
+                    h1["Mdc"] = [[-1, 0, 0], [0, 0, -1], [0, 1, 0]]
+                    h1["fov"] = conformed_img_size * conformed_vox_size
+                    h1["Pxyz_c"] = self.orig.affine.dot(
+                        np.hstack((np.array(self.orig.shape[:3]) / 2.0, [1])))[:3]
+
+                    # Here, we are explicitly using MGHHeader.get_affine() to construct the affine as
+                    # MdcD = np.asarray(h1['Mdc']).T * h1['delta']
+                    # vol_center = MdcD.dot(hdr['dims'][:3]) / 2
+                    # affine = from_matvec(MdcD, h1['Pxyz_c'] - vol_center)
+                    affine = h1.get_affine()
+
+                    # from_header does not compute Pxyz_c (and probably others) when importing from nii
+                    # Pxyz is the center of the image in world coords
+
+                    src_min, scale = 0, 1.0
+                    # get scale for conversion on original input before mapping to be more similar to
+                    # mri_convert
+                    if self.orig.get_data_dtype() != np.dtype(np.uint8):
+                        src_min, scale = conf.getscale(np.asanyarray(self.orig.dataobj), 0, 255)
+
+                    mapped_data = conf.map_image(self.orig, affine, h1.get_data_shape())
+
+                    if self.orig.get_data_dtype() != np.dtype(np.uint8):
+                        scaled_data = conf.scalecrop(mapped_data, 0, 255, src_min, scale)
+                        # map zero in input to zero in output (usually background)
+                        scaled_data[mapped_data == 0] = 0
+                        mapped_data = scaled_data
+                    self.orig_data = np.uint8(np.clip(np.rint(mapped_data), 0, 255))
+                    self.orig = nib.MGHImage(self.orig_data, affine, h1)
+                    self.orig.set_data_dtype(np.uint8)
             else:
-                print('Re-scaling and Conforming image to min size')
+                print(f'Re-scaling and Conforming image to {self.vox_size} size')
                 self.orig = conf.conform(self.orig, conform_vox_size=self.vox_size)
                 self.orig_data = np.asarray(self.orig.get_fdata(), dtype=np.uint8)
 
