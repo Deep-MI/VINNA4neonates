@@ -5,7 +5,6 @@
     "LOSS_FUNC": "combined",
     "NUM_FILTERS": 64,
     "NUM_FILTERS_INTERPOL": 32,
-    "INTERPOL_EXTRA": "add",
     "NUM_BLOCKS": 5,
     "NUM_CHANNELS": 7,
     "NUM_BRANCHES": 5,
@@ -18,7 +17,6 @@
     "POOL": 2,
     "HEIGHT": 320,
     "WIDTH": 320,
-    "DEPTH": 256,
     "BASE_RES": 0.8,
     "INTERPOLATION_MODE": "bilinear",
     "CROP_POSITION": "top_left",
@@ -55,8 +53,8 @@
       "aseg",
       "children"
     ],
-    "LUT": "/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/configs/FastInfantSurfer_dHCP_full_LUT.tsv",
-    "META_INFO": "/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/data/dataset_split_large_validation_t1t2_meta.tsv",
+    "LUT": "/groups/ag-reuter/projects/NeonateVINNA/experiments/LUTs/FastInfantSurfer_dHCP_full_LUT.tsv",
+    "META_INFO": "/groups/ag-reuter/projects/NeonateVINNA/Dataset_splits/dataset_split_large_validation_t1t2_meta.tsv",
     "COMBINED_LABELS": true,
     "SIZES": [
       "256"
@@ -66,6 +64,8 @@
       "None",
       "Gaussian"
     ],
+    "SYNTHSEG_LUT": "/groups/ag-reuter/projects/NeonateVINNA/experiments/LUTs/synthseg_infant_test.tsv",
+    "SYNTHSEG_TRADEOFF": 1.0,
     "LATENT_AFFINE": true,
     "UPR_AFFINE": false,
     "Rot_ANGLE_MIN": 0,
@@ -115,7 +115,7 @@
     "OPTIMIZING_METHOD": "adamW"
   },
   "NUM_GPUS": 1,
-  "LOG_DIR": "/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/experiments",
+  "LOG_DIR": "/groups/ag-reuter/projects/NeonateVINNA/experiments",
   "EXPR_NUM": "FastSurferVINN_Infant_bigMixAffineNN_T2_LatentAug_AdamW_Cos_3x3F_71_0.8BR_full_sagittal",
   "RNG_SEED": 1,
   "WANDB_PROJECT": "BabySurfer",
