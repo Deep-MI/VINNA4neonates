@@ -12,6 +12,11 @@ cd ..
 docker build --rm=true -t neonatevinna:gpu-beta -f ./Docker/Dockerfile .
 ```
 
+With buildkit and docker-container builder, the command is
+```bash
+docker buildx build -f ./Docker/Dockerfile -t vinna4neonates:gpu-beta --load .
+```
+
 For running the analysis, you can use the single_img_inference.sh script in the run_scripts directory (Example 1) or directly use the docker call (Example 2) for which you need to specify more options by yourself currently.
 
 ### Example 1: Single image inference the simple way

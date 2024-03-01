@@ -1,0 +1,128 @@
+{
+  "MODEL": {
+    "MODEL_NAME": "FastSurferVINN",
+    "NUM_CLASSES": 89,
+    "LOSS_FUNC": "combined",
+    "NUM_FILTERS": 64,
+    "NUM_FILTERS_INTERPOL": 32,
+    "INTERPOL_EXTRA": "no",
+    "NUM_BLOCKS": 5,
+    "NUM_CHANNELS": 7,
+    "NUM_BRANCHES": 5,
+    "KERNEL_H": 3,
+    "KERNEL_W": 3,
+    "KERNEL_D": 3,
+    "KERNEL_C": 1,
+    "STRIDE_CONV": 1,
+    "STRIDE_POOL": 2,
+    "POOL": 2,
+    "HEIGHT": 320,
+    "WIDTH": 320,
+    "BASE_RES": 0.8,
+    "INTERPOLATION_MODE": "bilinear",
+    "CROP_POSITION": "top_left",
+    "OUT_TENSOR_WIDTH": 256,
+    "OUT_TENSOR_HEIGHT": 256,
+    "SMOOTH": false,
+    "ELASTIC_DEFORMATION": false
+  },
+  "TRAIN": {
+    "BATCH_SIZE": 16,
+    "LOG_INTERVAL": 50,
+    "RESUME": true,
+    "RESUME_EXPR_NUM": "FastSurferVINN_Infant_bigMixAffineNN_T2_LatentAugPlus_AdamW_Cos_3x3F_71_0.8BR_full_coronal",
+    "NUM_EPOCHS": 160,
+    "NUM_STEPS": 10,
+    "FINE_TUNE": false,
+    "CHECKPOINT_PERIOD": 20,
+    "NUM_WORKERS": 3,
+    "EARLY_STOPPING": true,
+    "EARLY_STOPPING_MODE": "max",
+    "EARLY_STOPPING_PATIENCE": 10,
+    "EARLY_STOPPING_WAIT": 10,
+    "EARLY_STOPPING_DELTA": 1e-05
+  },
+  "TEST": {
+    "BATCH_SIZE": 16
+  },
+  "DATA": {
+    "PATH_HDF5_TRAIN": "/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/hdf5_sets/training_bigMixAffineNN_dHCP_full_coronal.hdf5",
+    "PATH_HDF5_VAL": "/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/hdf5_sets/validation_bigMixAffineNN_dHCP_full_coronal.hdf5",
+    "PLANE": "coronal",
+    "IMG_TYPE": "t2_image",
+    "CLASS_OPTIONS": [
+      "aseg",
+      "children"
+    ],
+    "LUT": "/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/configs/FastInfantSurfer_dHCP_full_LUT.tsv",
+    "META_INFO": "/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/data/dataset_split_large_validation_t1t2_meta.tsv",
+    "COMBINED_LABELS": true,
+    "SIZES": [
+      "256"
+    ],
+    "PADDED_SIZE": 256,
+    "AUG": [
+      "RAnisotropy",
+      "BiasField",
+      "RGamma",
+      "Noise",
+      "Ghosting",
+      "Blur",
+      "Gaussian"
+    ],
+    "LATENT_AFFINE": true,
+    "UPR_AFFINE": false,
+    "Rot_ANGLE_MIN": 0,
+    "Rot_ANGLE_MAX": 180,
+    "TRANSLATION_MIN": 0.2,
+    "TRANSLATION_MAX": 0.4,
+    "DIMENSION": 2,
+    "NUM_CTRL_POINTS": [
+      7,
+      7
+    ],
+    "MAX_DISPLACEMENT": [
+      8,
+      8
+    ],
+    "LOCKED_BORDERS": 2,
+    "MIX_T1_T2": false
+  },
+  "DATA_LOADER": {
+    "NUM_WORKERS": 3,
+    "PIN_MEMORY": true
+  },
+  "EVALMETRICS": {
+    "LUT": "/autofs/vast/lzgroup/Users/LeonieHenschel/FastInfantSurfer/configs/FastInfantSurfer_LUT.tsv",
+    "SUBSTRUCT": [
+      1,
+      20
+    ]
+  },
+  "OPTIMIZER": {
+    "BASE_LR": 0.01,
+    "LR_SCHEDULER": "cosineWarmRestarts",
+    "GAMMA": 0.3,
+    "STEP_SIZE": 5,
+    "ETA_MIN": 0.0001,
+    "T_ZERO": 10,
+    "T_MULT": 2,
+    "FACTOR": 0.1,
+    "PATIENCE": 5,
+    "THRESH": 0.0001,
+    "COOLDOWN": 0,
+    "MODE": "min",
+    "MOMENTUM": 0.9,
+    "DAMPENING": 0.0,
+    "NESTEROV": true,
+    "WEIGHT_DECAY": 0.0001,
+    "OPTIMIZING_METHOD": "adamW"
+  },
+  "NUM_GPUS": 1,
+  "LOG_DIR": "/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/experiments",
+  "EXPR_NUM": "FastSurferVINN_Infant_bigMixAffineNN_T2_LatentAugPlus_AdamW_Cos_3x3F_71_0.8BR_full_coronal",
+  "RNG_SEED": 1,
+  "WANDB_PROJECT": "BabySurfer",
+  "SUMMARY_PATH": "/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/experiments/summary/FastSurferVINN_Infant_bigMixAffineNN_T2_LatentAugPlus_AdamW_Cos_3x3F_71_0.8BR_full_coronal",
+  "CONFIG_LOG_PATH": "/groups/ag-reuter/projects/master-theses/henschell/FastInfantSurfer/experiments/config/FastSurferVINN_Infant_bigMixAffineNN_T2_LatentAugPlus_AdamW_Cos_3x3F_71_0.8BR_full_coronal"
+}

@@ -8,7 +8,7 @@ mode="T2"
 infermode=${mode}
 labels="_full"
 lut=/NeonateVINNA/VINNA/config/LUTs/FastInfantSurfer_dHCP${labels}_LUT.tsv #iBEAT_LUT.tsv #
-augS="_LatentAugPlus"
+augS="default"
 net="FastSurferVINN"  #"FastSurferVINN"
 view="all"
 suff="AffineNN" #
@@ -153,11 +153,13 @@ cd /NeonateVINNA
 
 if [ "$net" == "FastSurferVINN" ] || [ "$net" == "FastSurferSVINN" ]; then
     br=0.8BR
-    augS="_LatentAug"
+    if [[ "$augS" == "default" ]]; then augS="_LatentAug"; fi
 else
     br=1.0BR
-    augS="_RotTLScale"
+    if [[ "$augS" == "default" ]]; then augS="_RotTLScale"; fi
 fi
+
+if [[ "$augS" == "default" ]]; then augS="_LatentAugPlus"; fi
 
 cfg=${net}_Infant_bigMix${suff}_${mode}${augS}_AdamW_Cos_3x3F_71_${br}${labels}
 mn=${net}${augS}
