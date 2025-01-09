@@ -40,7 +40,7 @@ RUN conda-pack -n vinna4neonates_gpu -o /tmp/env.tar && \
 
 # Now that venv in a new location, fix up paths:
 RUN /venv/bin/conda-unpack
-ENV PATH /venv/bin:$PATH
+ENV PATH=/venv/bin:$PATH
 
 # ========================================
 # Here we create the smaller runtime image
@@ -72,7 +72,7 @@ COPY ./VINNA/ /VINNA4neonates/VINNA
 COPY ./run_vinna4neonates.sh /VINNA4neonates/run_vinna4neonates.sh
 
 # Set all Pythonpath references already
-ENV PYTHONPATH=/FastSurfer:/VINNA4neonates:$PYTHONPATH \
+ENV PYTHONPATH=/FastSurfer:/VINNA4neonates \
     MPLCONFIGDIR=/tmp \
     FASTSURFER_HOME=/FastSurfer \
     VINNA4NEONATES_HOME=/VINNA4neonates
